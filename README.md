@@ -1,20 +1,20 @@
-# DriftClean
+# 🧠 DriftClean
 
-**NLP-Based Topic Drift Detection and Context-Aware Text Filtering**
+> **NLP-Based Topic Drift Detection and Context-Aware Text Filtering**
 
-DriftClean is an NLP-based application designed to detect topic drift in text. Given a main topic and a collection of sentences, the system analyzes the semantic relationship between the topic and each sentence, identifies irrelevant content, and generates a cleaned topic-focused version of the text.
-
----
-
-## Problem Statement
-
-Large text documents can contain sentences that gradually move away from the intended topic. Traditional keyword-based filtering may fail because two sentences can use different words while having similar meanings.
-
-DriftClean addresses this problem using semantic sentence embeddings and similarity-based classification. Instead of relying only on exact keyword matching, it compares the meaning of a sentence with the meaning of the user-defined topic.
+DriftClean is an NLP-based application that detects when text moves away from its intended topic. Given a **main topic** and **user-provided text**, the system analyzes each sentence using semantic similarity, identifies topic drift, classifies relevance, and generates a cleaned topic-focused version of the text.
 
 ---
 
-## Objectives
+## 📌 Problem Statement
+
+Large documents can contain sentences that gradually move away from the intended subject. Traditional keyword-based filtering may fail because two sentences can use different words while expressing similar meanings.
+
+DriftClean addresses this problem using **semantic sentence embeddings**. Instead of relying only on exact keyword matching, it compares the meaning of each sentence with the meaning of the user-defined topic.
+
+---
+
+## 🎯 Objectives
 
 - Detect whether sentences remain relevant to a main topic
 - Identify topic drift within text
@@ -27,32 +27,30 @@ DriftClean addresses this problem using semantic sentence embeddings and similar
 
 ---
 
-## Features
+## ✨ Key Features
 
-- Sentence Tokenization
-- Semantic Text Embeddings
-- Cosine Similarity Analysis
-- Topic Drift Detection
-- Highly Relevant Classification
-- Partially Relevant Classification
-- Off Topic Detection
-- Automatic Text Cleaning
-- Strict, Balanced and Lenient Sensitivity Modes
-- Topic Drift Percentage
-- Drift Severity Classification
-- Sentence Similarity Visualization
-- Download Cleaned Text
-- Model Evaluation
-- Accuracy, Precision, Recall and F1-Score
-- Confusion Matrix Visualization
-- Streamlit Web Interface
+| Feature | Description |
+|---|---|
+| Sentence Tokenization | Splits input text into individual sentences |
+| Semantic Embeddings | Converts topics and sentences into semantic vector representations |
+| Cosine Similarity | Measures semantic similarity between the topic and each sentence |
+| Topic Drift Detection | Identifies sentences that move away from the main topic |
+| Relevance Classification | Classifies sentences as Highly Relevant, Partially Relevant, or Off Topic |
+| Automatic Text Cleaning | Removes off-topic sentences automatically |
+| Sensitivity Modes | Supports Strict, Balanced, and Lenient modes |
+| Drift Percentage | Calculates the percentage of off-topic content |
+| Drift Severity | Categorizes drift as Low, Moderate, or High |
+| Download Cleaned Text | Allows the cleaned result to be downloaded |
+| Model Evaluation | Calculates Accuracy, Precision, Recall, and F1 Score |
+| Confusion Matrix | Visualizes classification performance |
+| Streamlit Interface | Provides an interactive web application |
 
 ---
 
-## How It Works
+## ⚙️ How It Works
 
 ```text
-Input: Topic + User Text
+Topic + User Text
         │
         ▼
 Sentence Tokenization
@@ -64,86 +62,112 @@ Sentence Transformer Model
 Semantic Embeddings
         │
         ▼
-Cosine Similarity Calculation
+Cosine Similarity
         │
         ▼
 Threshold-Based Classification
-   ┌────────────┼─────────────┐
-   ▼            ▼             ▼
-Highly       Partially      Off Topic
-Relevant     Relevant
-                              │
-                              ▼
-                    Topic Drift Detected
-                              │
-                              ▼
-                 Remove Off-Topic Sentences
-                              │
-                              ▼
-                  Cleaned Topic-Focused Text
+   ┌───────┼────────┐
+   ▼       ▼        ▼
+Highly   Partially  Off
+Relevant Relevant   Topic
+                    │
+                    ▼
+          Topic Drift Detected
+                    │
+                    ▼
+       Remove Off-Topic Sentences
+                    │
+                    ▼
+       Cleaned Topic-Focused Text
+```
 
-Technologies Used
-Technology	Purpose
-Python	Core programming language
-NLTK	Sentence tokenization
-Sentence Transformers	Semantic sentence embeddings
-Scikit-learn	Cosine similarity and evaluation metrics
-Pandas	Dataset processing
-Matplotlib	Confusion matrix visualization
-Streamlit	Interactive web application
-Classification Logic
+---
 
-The system uses semantic similarity scores and configurable thresholds.
+## 🛠️ Technologies Used
 
-Balanced Mode
+| Technology | Purpose |
+|---|---|
+| Python | Core programming language |
+| NLTK | Sentence tokenization |
+| Sentence Transformers | Semantic sentence embeddings |
+| Scikit-learn | Cosine similarity and evaluation metrics |
+| Pandas | Dataset processing |
+| Matplotlib | Confusion matrix visualization |
+| Streamlit | Interactive web application |
 
-Classification	Similarity Score
-Highly Relevant	≥ 0.50
-Partially Relevant	≥ 0.30 and < 0.50
-Off Topic	< 0.30
+---
 
-Strict Mode
+## 🧠 Classification Logic
 
-Classification	Similarity Score
-Highly Relevant	≥ 0.70
-Partially Relevant	≥ 0.45 and < 0.70
-Off Topic	< 0.45
+DriftClean compares the semantic similarity between the **main topic** and each **individual sentence**. Classification thresholds can be adjusted using three sensitivity modes.
 
-Lenient Mode
+### Balanced Mode
 
-Classification	Similarity Score
-Highly Relevant	≥ 0.40
-Partially Relevant	≥ 0.20 and < 0.40
-Off Topic	< 0.20
-Topic Drift Severity
+| Classification | Similarity Score |
+|---|---:|
+| 🟢 Highly Relevant | ≥ 0.50 |
+| 🟡 Partially Relevant | ≥ 0.30 and < 0.50 |
+| 🔴 Off Topic | < 0.30 |
 
-Topic drift is calculated as:
+### Strict Mode
 
+| Classification | Similarity Score |
+|---|---:|
+| 🟢 Highly Relevant | ≥ 0.70 |
+| 🟡 Partially Relevant | ≥ 0.45 and < 0.70 |
+| 🔴 Off Topic | < 0.45 |
+
+### Lenient Mode
+
+| Classification | Similarity Score |
+|---|---:|
+| 🟢 Highly Relevant | ≥ 0.40 |
+| 🟡 Partially Relevant | ≥ 0.20 and < 0.40 |
+| 🔴 Off Topic | < 0.20 |
+
+---
+
+## 📊 Topic Drift Severity
+
+**Formula**
+
+```text
 Topic Drift Percentage =
 (Number of Off-Topic Sentences / Total Number of Sentences) × 100
-Drift Percentage	Severity
-0%–20%	Low Drift
->20%–50%	Moderate Drift
->50%	High Drift
-Model Evaluation
+```
 
-The model was evaluated using an 18-example labelled dataset containing three domains:
+| Drift Percentage | Severity |
+|---|---|
+| 0% – 20% | 🟢 Low Drift |
+| >20% – 50% | 🟡 Moderate Drift |
+| >50% | 🔴 High Drift |
 
-Artificial Intelligence in Healthcare
-Climate Change and Global Warming
-Cybersecurity and Data Protection
+---
 
-Evaluation Results
+## 🧪 Model Evaluation
 
-Metric	Score
-Accuracy	83.33%
-Precision	86.90%
-Recall	83.33%
-F1 Score	84.04%
+The model was evaluated using an **18-example labelled dataset** across three domains:
 
-The evaluation showed strong performance in identifying clearly off-topic sentences. The partially relevant category was more challenging because these sentences lie close to the semantic boundary between relevant and irrelevant content.
+- Artificial Intelligence in Healthcare
+- Climate Change and Global Warming
+- Cybersecurity and Data Protection
 
-Project Structure
+### Results
+
+| Metric | Score |
+|---|---:|
+| **Accuracy** | **83.33%** |
+| **Precision** | **86.90%** |
+| **Recall** | **83.33%** |
+| **F1 Score** | **84.04%** |
+
+The evaluation showed strong performance in identifying clearly off-topic sentences. The **Partially Relevant** category was more challenging because these sentences lie close to the semantic boundary between relevant and irrelevant content.
+
+---
+
+## 📁 Project Structure
+
+```text
 DriftClean/
 │
 ├── data/
@@ -165,57 +189,103 @@ DriftClean/
 ├── requirements.txt
 ├── README.md
 └── .gitignore
-Installation
+```
 
-Clone the repository:
+---
 
+## 🚀 Installation and Setup
+
+### 1. Clone the Repository
+
+```bash
 git clone YOUR_REPOSITORY_URL
+```
 
-Move into the project directory:
+### 2. Open the Project Folder
 
+```bash
 cd DriftClean
+```
 
-Create a virtual environment:
+### 3. Create a Virtual Environment
 
+```powershell
 py -3.12 -m venv .venv
+```
 
-Activate it:
+### 4. Activate the Virtual Environment
 
+```powershell
 .\.venv\Scripts\Activate.ps1
+```
 
-Install dependencies:
+### 5. Install Dependencies
 
+```powershell
 pip install -r requirements.txt
+```
 
-Run the application:
+### 6. Run the Application
 
+```powershell
 streamlit run app.py
-Model Evaluation
+```
 
-Run:
+The application will open in your browser.
 
+---
+
+## 🧪 Run Model Evaluation
+
+```powershell
 python -m src.evaluate_model
+```
 
 This generates:
 
+```text
 data/evaluation_results.csv
-Confusion Matrix
+```
 
-Run:
+---
 
+## 📈 Generate the Confusion Matrix
+
+```powershell
 python -m src.plot_evaluation
+```
 
 This generates:
 
+```text
 data/confusion_matrix.png
-Future Enhancements
-Automatic topic extraction
-Multi-topic detection
-Paragraph-level drift detection
-Custom threshold selection
-Larger evaluation datasets
-Multilingual topic drift detection
-Improved classification of partially relevant sentences
-Project
+```
 
-DriftClean was developed as an NLP project demonstrating semantic similarity, sentence embeddings, topic drift detection, context-aware text filtering, and model evaluation.
+---
+
+## 🔮 Future Enhancements
+
+- Automatic topic extraction
+- Multi-topic detection
+- Paragraph-level drift detection
+- User-defined classification thresholds
+- Larger evaluation datasets
+- Multilingual topic drift detection
+- Improved classification of partially relevant sentences
+- Additional semantic similarity visualizations
+
+---
+
+## 👨‍💻 Project Summary
+
+DriftClean demonstrates how modern NLP techniques can be used for:
+
+- Semantic similarity
+- Sentence embeddings
+- Topic drift detection
+- Context-aware text filtering
+- Sentence relevance classification
+- Automatic text cleaning
+- Model evaluation
+
+Instead of relying only on keyword matching, DriftClean focuses on understanding the **semantic meaning and context** of text.
