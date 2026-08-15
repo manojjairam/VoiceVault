@@ -1,0 +1,19 @@
+topic,sentence,expected_label
+Artificial Intelligence in Healthcare,Artificial intelligence helps doctors diagnose diseases.,Highly Relevant
+Artificial Intelligence in Healthcare,Machine learning can analyze medical images.,Highly Relevant
+Artificial Intelligence in Healthcare,Hospitals use AI to predict patient risks.,Highly Relevant
+Artificial Intelligence in Healthcare,Cricket is a popular sport in India.,Off Topic
+Artificial Intelligence in Healthcare,The IPL season attracts millions of viewers.,Off Topic
+Artificial Intelligence in Healthcare,Doctors are adopting new digital technologies.,Partially Relevant
+Climate Change and Global Warming,Rising global temperatures are melting glaciers.,Highly Relevant
+Climate Change and Global Warming,Carbon emissions contribute to global warming.,Highly Relevant
+Climate Change and Global Warming,Deforestation affects the Earth's climate.,Highly Relevant
+Climate Change and Global Warming,The football league starts next week.,Off Topic
+Climate Change and Global Warming,Many people enjoy watching movies on weekends.,Off Topic
+Climate Change and Global Warming,Electric vehicles may reduce environmental pollution.,Partially Relevant
+Cybersecurity and Data Protection,Strong passwords help protect online accounts.,Highly Relevant
+Cybersecurity and Data Protection,Encryption protects sensitive information.,Highly Relevant
+Cybersecurity and Data Protection,Multi-factor authentication improves account security.,Highly Relevant
+Cybersecurity and Data Protection,The cricket stadium was filled with spectators.,Off Topic
+Cybersecurity and Data Protection,Healthy food improves physical fitness.,Off Topic
+Cybersecurity and Data Protection,Cloud computing requires appropriate security controls.,Partially Relevant

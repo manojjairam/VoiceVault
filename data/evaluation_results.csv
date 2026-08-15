@@ -1,0 +1,19 @@
+topic,sentence,expected_label,similarity_score,predicted_label,correct_prediction
+Artificial Intelligence in Healthcare,Artificial intelligence helps doctors diagnose diseases.,Highly Relevant,0.7284,Highly Relevant,True
+Artificial Intelligence in Healthcare,Machine learning can analyze medical images.,Highly Relevant,0.5378,Highly Relevant,True
+Artificial Intelligence in Healthcare,Hospitals use AI to predict patient risks.,Highly Relevant,0.6822,Highly Relevant,True
+Artificial Intelligence in Healthcare,Cricket is a popular sport in India.,Off Topic,0.0319,Off Topic,True
+Artificial Intelligence in Healthcare,The IPL season attracts millions of viewers.,Off Topic,0.0248,Off Topic,True
+Artificial Intelligence in Healthcare,Doctors are adopting new digital technologies.,Partially Relevant,0.3925,Partially Relevant,True
+Climate Change and Global Warming,Rising global temperatures are melting glaciers.,Highly Relevant,0.5987,Highly Relevant,True
+Climate Change and Global Warming,Carbon emissions contribute to global warming.,Highly Relevant,0.6946,Highly Relevant,True
+Climate Change and Global Warming,Deforestation affects the Earth's climate.,Highly Relevant,0.554,Highly Relevant,True
+Climate Change and Global Warming,The football league starts next week.,Off Topic,-0.0222,Off Topic,True
+Climate Change and Global Warming,Many people enjoy watching movies on weekends.,Off Topic,0.0434,Off Topic,True
+Climate Change and Global Warming,Electric vehicles may reduce environmental pollution.,Partially Relevant,0.2704,Off Topic,False
+Cybersecurity and Data Protection,Strong passwords help protect online accounts.,Highly Relevant,0.3792,Partially Relevant,False
+Cybersecurity and Data Protection,Encryption protects sensitive information.,Highly Relevant,0.5442,Highly Relevant,True
+Cybersecurity and Data Protection,Multi-factor authentication improves account security.,Highly Relevant,0.3275,Partially Relevant,False
+Cybersecurity and Data Protection,The cricket stadium was filled with spectators.,Off Topic,-0.0418,Off Topic,True
+Cybersecurity and Data Protection,Healthy food improves physical fitness.,Off Topic,0.0212,Off Topic,True
+Cybersecurity and Data Protection,Cloud computing requires appropriate security controls.,Partially Relevant,0.4622,Partially Relevant,True
