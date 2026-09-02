@@ -18,3 +18,23 @@ __pycache__/
 # Operating system files
 .DS_Store
 Thumbs.db
+
+# Local database
+data/voicevault.db
+
+# Generated outputs
+outputs/
+
+# Temporary media files
+*.wav
+*.mp3
+*.m4a
+*.ogg
+*.flac
+*.aac
+*.mp4
+*.mkv
+*.webm
+*.avi
+*.mov
+*.m4v

@@ -1,8 +1,8 @@
-# 🧠 DriftClean
+# 🧠 VoiceVault
 
 > **NLP-Based Topic Drift Detection and Context-Aware Text Filtering**
 
-DriftClean is an NLP-based application that detects when text moves away from its intended topic. Given a **main topic** and **user-provided text**, the system analyzes each sentence using semantic similarity, identifies topic drift, classifies relevance, and generates a cleaned topic-focused version of the text.
+VoiceVault is an NLP-based application that detects when text moves away from its intended topic. Given a **main topic** and **user-provided text**, the system analyzes each sentence using semantic similarity, identifies topic drift, classifies relevance, and generates a cleaned topic-focused version of the text.
 
 ---
 
@@ -10,7 +10,7 @@ DriftClean is an NLP-based application that detects when text moves away from it
 
 Large documents can contain sentences that gradually move away from the intended subject. Traditional keyword-based filtering may fail because two sentences can use different words while expressing similar meanings.
 
-DriftClean addresses this problem using **semantic sentence embeddings**. Instead of relying only on exact keyword matching, it compares the meaning of each sentence with the meaning of the user-defined topic.
+VoiceVault addresses this problem using **semantic sentence embeddings**. Instead of relying only on exact keyword matching, it compares the meaning of each sentence with the meaning of the user-defined topic.
 
 ---
 
@@ -99,7 +99,7 @@ Relevant Relevant   Topic
 
 ## 🧠 Classification Logic
 
-DriftClean compares the semantic similarity between the **main topic** and each **individual sentence**. Classification thresholds can be adjusted using three sensitivity modes.
+VoiceVault compares the semantic similarity between the **main topic** and each **individual sentence**. Classification thresholds can be adjusted using three sensitivity modes.
 
 ### Balanced Mode
 
@@ -168,7 +168,7 @@ The evaluation showed strong performance in identifying clearly off-topic senten
 ## 📁 Project Structure
 
 ```text
-DriftClean/
+VoiceVault/
 │
 ├── data/
 │   ├── evaluation_dataset.csv
@@ -204,7 +204,7 @@ git clone YOUR_REPOSITORY_URL
 ### 2. Open the Project Folder
 
 ```bash
-cd DriftClean
+cd VoiceVault
 ```
 
 ### 3. Create a Virtual Environment
@@ -278,7 +278,7 @@ data/confusion_matrix.png
 
 ## 👨‍💻 Project Summary
 
-DriftClean demonstrates how modern NLP techniques can be used for:
+VoiceVault demonstrates how modern NLP techniques can be used for:
 
 - Semantic similarity
 - Sentence embeddings
@@ -288,4 +288,6 @@ DriftClean demonstrates how modern NLP techniques can be used for:
 - Automatic text cleaning
 - Model evaluation
 
-Instead of relying only on keyword matching, DriftClean focuses on understanding the **semantic meaning and context** of text.
+Instead of relying only on keyword matching, VoiceVault focuses on understanding the **semantic meaning and context** of text.
+
+
