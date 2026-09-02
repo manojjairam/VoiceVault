@@ -1,293 +1,669 @@
-# 🧠 VoiceVault
-
-> **NLP-Based Topic Drift Detection and Context-Aware Text Filtering**
-
-VoiceVault is an NLP-based application that detects when text moves away from its intended topic. Given a **main topic** and **user-provided text**, the system analyzes each sentence using semantic similarity, identifies topic drift, classifies relevance, and generates a cleaned topic-focused version of the text.
-
----
-
-## 📌 Problem Statement
-
-Large documents can contain sentences that gradually move away from the intended subject. Traditional keyword-based filtering may fail because two sentences can use different words while expressing similar meanings.
-
-VoiceVault addresses this problem using **semantic sentence embeddings**. Instead of relying only on exact keyword matching, it compares the meaning of each sentence with the meaning of the user-defined topic.
-
----
-
-## 🎯 Objectives
-
-- Detect whether sentences remain relevant to a main topic
-- Identify topic drift within text
-- Use semantic similarity instead of simple keyword matching
-- Classify sentences into relevance categories
-- Remove off-topic content automatically
-- Generate cleaned, topic-focused text
-- Provide multiple sensitivity levels
-- Evaluate classification performance using standard machine learning metrics
-
----
-
-## ✨ Key Features
-
-| Feature | Description |
-|---|---|
-| Sentence Tokenization | Splits input text into individual sentences |
-| Semantic Embeddings | Converts topics and sentences into semantic vector representations |
-| Cosine Similarity | Measures semantic similarity between the topic and each sentence |
-| Topic Drift Detection | Identifies sentences that move away from the main topic |
-| Relevance Classification | Classifies sentences as Highly Relevant, Partially Relevant, or Off Topic |
-| Automatic Text Cleaning | Removes off-topic sentences automatically |
-| Sensitivity Modes | Supports Strict, Balanced, and Lenient modes |
-| Drift Percentage | Calculates the percentage of off-topic content |
-| Drift Severity | Categorizes drift as Low, Moderate, or High |
-| Download Cleaned Text | Allows the cleaned result to be downloaded |
-| Model Evaluation | Calculates Accuracy, Precision, Recall, and F1 Score |
-| Confusion Matrix | Visualizes classification performance |
-| Streamlit Interface | Provides an interactive web application |
-
----
-
-## ⚙️ How It Works
-
-```text
-Topic + User Text
-        │
-        ▼
-Sentence Tokenization
-        │
-        ▼
-Sentence Transformer Model
-        │
-        ▼
-Semantic Embeddings
-        │
-        ▼
-Cosine Similarity
-        │
-        ▼
-Threshold-Based Classification
-   ┌───────┼────────┐
-   ▼       ▼        ▼
-Highly   Partially  Off
-Relevant Relevant   Topic
-                    │
-                    ▼
-          Topic Drift Detected
-                    │
-                    ▼
-       Remove Off-Topic Sentences
-                    │
-                    ▼
-       Cleaned Topic-Focused Text
-```
-
----
-
-## 🛠️ Technologies Used
-
-| Technology | Purpose |
-|---|---|
-| Python | Core programming language |
-| NLTK | Sentence tokenization |
-| Sentence Transformers | Semantic sentence embeddings |
-| Scikit-learn | Cosine similarity and evaluation metrics |
-| Pandas | Dataset processing |
-| Matplotlib | Confusion matrix visualization |
-| Streamlit | Interactive web application |
-
----
-
-## 🧠 Classification Logic
-
-VoiceVault compares the semantic similarity between the **main topic** and each **individual sentence**. Classification thresholds can be adjusted using three sensitivity modes.
-
-### Balanced Mode
-
-| Classification | Similarity Score |
-|---|---:|
-| 🟢 Highly Relevant | ≥ 0.50 |
-| 🟡 Partially Relevant | ≥ 0.30 and < 0.50 |
-| 🔴 Off Topic | < 0.30 |
-
-### Strict Mode
-
-| Classification | Similarity Score |
-|---|---:|
-| 🟢 Highly Relevant | ≥ 0.70 |
-| 🟡 Partially Relevant | ≥ 0.45 and < 0.70 |
-| 🔴 Off Topic | < 0.45 |
-
-### Lenient Mode
-
-| Classification | Similarity Score |
-|---|---:|
-| 🟢 Highly Relevant | ≥ 0.40 |
-| 🟡 Partially Relevant | ≥ 0.20 and < 0.40 |
-| 🔴 Off Topic | < 0.20 |
-
----
-
-## 📊 Topic Drift Severity
-
-**Formula**
-
-```text
-Topic Drift Percentage =
-(Number of Off-Topic Sentences / Total Number of Sentences) × 100
-```
-
-| Drift Percentage | Severity |
-|---|---|
-| 0% – 20% | 🟢 Low Drift |
-| >20% – 50% | 🟡 Moderate Drift |
-| >50% | 🔴 High Drift |
-
----
-
-## 🧪 Model Evaluation
-
-The model was evaluated using an **18-example labelled dataset** across three domains:
-
-- Artificial Intelligence in Healthcare
-- Climate Change and Global Warming
-- Cybersecurity and Data Protection
-
-### Results
-
-| Metric | Score |
-|---|---:|
-| **Accuracy** | **83.33%** |
-| **Precision** | **86.90%** |
-| **Recall** | **83.33%** |
-| **F1 Score** | **84.04%** |
-
-The evaluation showed strong performance in identifying clearly off-topic sentences. The **Partially Relevant** category was more challenging because these sentences lie close to the semantic boundary between relevant and irrelevant content.
-
----
-
-## 📁 Project Structure
-
-```text
+🧠 VoiceVault
+AI-Powered Voice Intelligence, Transcription, Evaluation & Content Management Platform
+VoiceVault is an AI-powered voice processing application designed to transform audio and video content into useful, searchable, and structured information.
+The application supports audio/video uploads as well as online media sources such as YouTube. It can extract audio, transcribe speech using multiple AI speech-recognition models, compare transcription quality using objective evaluation metrics, and organize the resulting content into summaries, key points, action items, and keywords.
+VoiceVault also provides organizational content publishing and deletion-confirmation functionality through a local SQLite database.
+📌 Project Overview
+VoiceVault combines multiple AI and data-processing technologies into a single application.
+Audio / Video / Online Media
+            │
+            ▼
+      Media Detection
+            │
+            ▼
+      Audio Extraction
+            │
+            ▼
+    Audio Preprocessing
+            │
+            ▼
+   Speech Recognition Models
+            │
+      ┌─────┼─────────────┐
+      ▼     ▼             ▼
+   Whisper Faster-Whisper Wav2Vec2
+      │     │             │
+      └─────┼─────────────┘
+            ▼
+       Transcriptions
+            │
+            ▼
+     Quality Evaluation
+            │
+     ┌──────┼─────────┐
+     ▼      ▼         ▼
+    BLEU    WER       CER
+            │
+            ▼
+     Content Extraction
+            │
+      ┌─────┼──────────────┐
+      ▼     ▼              ▼
+    Title Summary     Key Points
+      │     │              │
+      └─────┼──────────────┘
+            ▼
+      Action Items
+            │
+            ▼
+        Keywords
+            │
+            ▼
+    Published Content
+            │
+            ▼
+       SQLite Database
+✨ Key Features
+Feature	Description
+Audio Processing	Upload, validate, inspect, and standardize supported audio files.
+Video Processing	Extract audio from uploaded video using FFmpeg.
+Online Media	Detect and process YouTube and compatible direct media URLs.
+Media Metadata	Retrieve title, description, duration, uploader, channel, thumbnail, language, view count, categories, tags and stream availability.
+Speech Recognition	Transcribe audio with Whisper, Faster-Whisper and Wav2Vec2.
+Fast Transcription	Use Faster-Whisper alone for quicker transcription.
+Model Comparison	Run multiple ASR architectures and compare their outputs.
+Evaluation	Calculate BLEU, WER and CER against reference text.
+Content Extraction	Generate title, summary, key points, action items and keywords.
+Publishing	Store extracted organizational content in SQLite.
+Deletion Confirmation	Require all registered organization members to confirm before permanent deletion.
+Streamlit UI	Provide an interactive application interface.
+🎙️ Audio Processing
+•	Upload audio files directly.
+•	Supported formats: WAV, MP3, M4A, FLAC and OGG.
+•	Extract duration, sample rate, channel count and file name.
+•	Convert uploaded audio into a standardized WAV format.
+•	Standardize audio to 16 kHz, mono WAV.
+🎬 Video Processing
+VoiceVault can process video files by extracting their audio track.
+The extracted audio is converted to 16 kHz, mono, PCM WAV, a format suitable for local speech-recognition models.
+🌐 Online Media Processing
+VoiceVault uses yt-dlp for online media processing.
+•	YouTube
+•	Direct media URLs
+•	Other compatible online media sources
+Source categories:
+YouTube
+Google Meet
+Direct Media
+Unknown
+For YouTube processing, the implementation supports modern JavaScript challenge handling through Deno and yt-dlp EJS components.
+Retrieved metadata can include:
+•	Title
+•	Description
+•	Duration
+•	Uploader
+•	Channel
+•	Channel ID
+•	Upload date
+•	Thumbnail
+•	Language
+•	View count
+•	Categories
+•	Tags
+•	Audio availability
+•	Video availability
+A normal Google Meet URL is treated as a meeting page rather than a directly downloadable recording URL; the application asks for an accessible recording URL or an uploaded recording.
+🗣️ Speech Recognition
+1. OpenAI Whisper
+Whisper is used as the baseline automatic speech-recognition model.
+Architecture: Transformer Encoder-Decoder
+The implementation supports different Whisper model sizes, including Whisper (base).
+2. Faster-Whisper
+Faster-Whisper provides a speed-optimized implementation of Whisper using CTranslate2.
+Architecture: Whisper + CTranslate2
+Device: CPU
+Compute type: int8
+Faster-Whisper is also used by the fast transcription option.
+3. Wav2Vec2
+Wav2Vec2 provides an independent speech-recognition architecture for comparison.
+Model: facebook/wav2vec2-base-960h
+Architecture: CTC-based Speech Recognition
+The model is loaded through the Hugging Face Transformers pipeline.
+🔬 Model Comparison
+1. OpenAI Whisper
+2. Faster-Whisper
+3. Wav2Vec2
+Each model produces transcription, architecture information, detected language, processing time, success/failure status, and error information when applicable.
+Loaded models are cached during the application session to reduce repeated model-loading overhead.
+⚡ Fast Transcription
+Fast mode uses Faster-Whisper (base) only, allowing users to obtain a transcript without running every model.
+📊 Transcription Evaluation
+BLEU
+BLEU measures similarity between a reference transcription and generated transcription. Higher values indicate greater similarity to the reference.
+WER — Word Error Rate
+WER measures transcription errors at the word level.
+WER =
+(Substitutions + Deletions + Insertions)
+/
+Number of Reference Words
+The implementation calculates WER using edit distance. Lower WER indicates better transcription quality.
+CER — Character Error Rate
+CER evaluates transcription accuracy at the character level.
+CER =
+Character Edit Distance
+/
+Number of Reference Characters
+CER is reported as a percentage. Lower CER indicates better transcription quality.
+📈 Evaluation Workflow
+Reference Transcription
+          │
+          ▼
+    Normalize Text
+          │
+          ▼
+   Model Transcription
+          │
+          ▼
+      ┌───┼────┐
+      ▼   ▼    ▼
+    BLEU WER  CER
+      │   │    │
+      └───┼────┘
+          ▼
+   Evaluation Results
+•	Convert text to lowercase.
+•	Remove punctuation.
+•	Normalize whitespace.
+•	Compare normalized reference and generated text.
+🧠 Content Extraction
+The content extraction module organizes transcription into useful information:
+Title
+Summary
+Key Points
+Action Items
+Keywords
+Title
+Generated from the first few words of the transcription.
+Summary
+Generated from the initial sentences of the transcription.
+Key Points
+The first several meaningful sentences are extracted as key points.
+Action Items
+Sentences containing action-oriented keywords are identified.
+need to
+should
+must
+please
+complete
+finish
+submit
+review
+prepare
+schedule
+send
+update
+create
+Keywords
+Frequently occurring meaningful words are extracted after removing common stop words. The most frequent keywords are returned.
+🗄️ SQLite Database
+VoiceVault includes a local SQLite database for managing published organizational content.
+data/VoiceVault.db
+published_content
+Stores published organizational content.
+id
+title
+summary
+key_points
+action_items
+keywords
+original_transcription
+created_at
+published_by
+status
+organization_members
+Stores organization members.
+id
+name
+Member names are unique.
+deletion_confirmations
+Stores confirmation records when organization members approve deletion of published content.
+id
+content_id
+member_name
+confirmed_at
+The database prevents duplicate confirmation records for the same content and member.
+🔐 Collaborative Deletion System
+Content is not permanently deleted until every registered organization member has confirmed the deletion.
+Published Content
+       │
+       ▼
+Deletion Requested
+       │
+       ▼
+Members Confirm
+       │
+       ▼
+All Members Confirmed?
+       │
+    ┌──┴──┐
+    │     │
+   No    Yes
+    │     │
+    ▼     ▼
+Remain   Delete
+Published Content
+This provides an additional organizational approval layer before permanent deletion.
+🏗️ Project Architecture
 VoiceVault/
+│
+├── app.py
 │
 ├── data/
 │   ├── evaluation_dataset.csv
 │   ├── evaluation_results.csv
-│   └── confusion_matrix.png
+│   └── VoiceVault.db
 │
 ├── src/
 │   ├── __init__.py
-│   ├── text_processor.py
-│   ├── similarity_engine.py
-│   ├── drift_detector.py
-│   ├── text_cleaner.py
-│   ├── evaluate_model.py
-│   ├── plot_evaluation.py
-│   └── test files...
+│   ├── audio_processor.py
+│   ├── content_extractor.py
+│   ├── database.py
+│   ├── media_downloader.py
+│   ├── metrics.py
+│   └── speech_models.py
 │
-├── app.py
 ├── requirements.txt
 ├── README.md
 └── .gitignore
-```
-
----
-
-## 🚀 Installation and Setup
-
-### 1. Clone the Repository
-
-```bash
-git clone YOUR_REPOSITORY_URL
-```
-
-### 2. Open the Project Folder
-
-```bash
+📂 Module Description
+File	Purpose
+app.py	Main Streamlit application
+audio_processor.py	Audio validation, conversion, metadata extraction and temporary file handling
+content_extractor.py	Extracts titles, summaries, key points, action items and keywords
+database.py	SQLite database management and organizational content operations
+media_downloader.py	Online media detection, metadata retrieval, downloading and audio extraction
+metrics.py	BLEU, WER and CER transcription evaluation
+speech_models.py	Whisper, Faster-Whisper and Wav2Vec2 transcription
+evaluation_dataset.csv	Reference evaluation dataset
+evaluation_results.csv	Stored transcription evaluation results
+requirements.txt	Python dependencies
+README.md	Project documentation
+🛠️ Technologies Used
+Technology	Purpose
+Python	Core programming language
+Streamlit	Interactive web application
+OpenAI Whisper	Baseline speech recognition
+Faster-Whisper	Optimized speech recognition
+Wav2Vec2	Independent CTC-based speech recognition
+Hugging Face Transformers	Wav2Vec2 model pipeline
+PyTorch	Deep learning framework
+TorchAudio	Audio/deep-learning support
+Librosa	Audio processing
+SoundFile	WAV/audio file handling
+yt-dlp	Online media downloading
+FFmpeg	Audio/video conversion
+Deno	JavaScript runtime for modern YouTube processing
+Pandas	Dataset processing
+Scikit-learn	Machine-learning utilities
+SacreBLEU	BLEU evaluation
+jiwer	Speech-recognition evaluation dependency
+ROUGE Score	Text evaluation support
+BERTScore	Semantic text evaluation support
+SQLite	Local database
+📦 Python Requirements
+streamlit
+pandas
+librosa
+openai-whisper
+faster-whisper
+transformers
+torch
+torchaudio
+sacrebleu
+nltk
+scikit-learn
+yt-dlp
+rouge-score
+jiwer
+bert-score
+FFmpeg is also required for audio/video conversion. Deno is required for the current YouTube processing implementation.
+🚀 Installation
+1. Clone the Repository
+git clone https://github.com/manojjairam/VoiceVault.git
+2. Open the Project Folder
 cd VoiceVault
-```
-
-### 3. Create a Virtual Environment
-
-```powershell
+3. Create a Virtual Environment
 py -3.12 -m venv .venv
-```
-
-### 4. Activate the Virtual Environment
-
-```powershell
+4. Activate the Virtual Environment
 .\.venv\Scripts\Activate.ps1
-```
-
-### 5. Install Dependencies
-
-```powershell
+5. Upgrade pip
+python -m pip install --upgrade pip
+6. Install Dependencies
 pip install -r requirements.txt
-```
-
-### 6. Run the Application
-
-```powershell
+🎬 FFmpeg Setup
+FFmpeg is required for audio extraction, video-to-audio conversion, WAV conversion and online media processing.
+ffmpeg -version
+The application checks FFmpeg availability before processing online media.
+🦕 Deno Setup
+The current YouTube processing implementation uses Deno for modern JavaScript challenge handling.
+deno --version
+If Deno is unavailable, YouTube processing displays an appropriate error message.
+▶️ Running the Application
 streamlit run app.py
-```
-
-The application will open in your browser.
-
----
-
-## 🧪 Run Model Evaluation
-
-```powershell
-python -m src.evaluate_model
-```
-
-This generates:
-
-```text
+The Streamlit application will start locally and open in the browser.
+🎯 Complete Application Workflow
+                START
+                  │
+                  ▼
+       Select Input Source
+                  │
+        ┌─────────┼─────────┐
+        ▼         ▼         ▼
+      Audio     Video     Online URL
+        │         │         │
+        │         ▼         ▼
+        │    Extract Audio  Download
+        │         │         │
+        └─────────┼─────────┘
+                  ▼
+          Validate Audio
+                  │
+                  ▼
+        Convert / Normalize
+                  │
+                  ▼
+        Select ASR Models
+                  │
+        ┌─────────┼─────────┐
+        ▼         ▼         ▼
+     Whisper Faster-W   Wav2Vec2
+        │         │         │
+        └─────────┼─────────┘
+                  ▼
+           Transcriptions
+                  │
+                  ▼
+         Compare Transcripts
+                  │
+                  ▼
+          BLEU / WER / CER
+                  │
+                  ▼
+        Extract Useful Content
+                  │
+        ┌─────────┼─────────┐
+        ▼         ▼         ▼
+      Title    Summary   Key Points
+                  │
+                  ▼
+            Action Items
+                  │
+                  ▼
+              Keywords
+                  │
+                  ▼
+         Publish if Required
+                  │
+                  ▼
+           SQLite Database
+🔍 Input Sources
+Local Audio
+Users can upload supported audio files directly: WAV, MP3, M4A, FLAC and OGG.
+Local Video
+Video files can be processed by extracting their audio track using FFmpeg.
+Online Media
+Users can provide supported online media URLs. The application detects YouTube, Google Meet, Direct Media and Unknown Source.
+📋 Media Metadata
+•	Title
+•	Description
+•	Duration
+•	Uploader
+•	Channel
+•	Channel ID
+•	Upload Date
+•	Thumbnail
+•	Language
+•	View Count
+•	Categories
+•	Tags
+•	Audio Availability
+•	Video Availability
+🧪 Error Handling
+•	Unsupported audio formats
+•	Missing FFmpeg
+•	Missing Deno
+•	Invalid URLs
+•	Empty audio files
+•	Failed media downloads
+•	Restricted/private media
+•	Failed audio conversion
+•	Missing model dependencies
+•	Model loading failures
+•	Transcription failures
+•	Database integrity errors
+Processing modules return structured success/error information.
+💾 Temporary File Handling
+Uploaded and downloaded media files are handled using temporary directories/files where appropriate.
+Online media downloads use temporary directories with the VoiceVault-specific prefix:
+voicevault_media_
+Failed downloads are cleaned up automatically.
+🔄 Model Caching
+VoiceVault caches loaded speech-recognition models in memory.
+Whisper
+Faster-Whisper
+Wav2Vec2
+This reduces repeated model-loading overhead during the same application session.
+📊 Evaluation Dataset
+The repository contains:
+data/evaluation_dataset.csv
+Evaluation results are stored in:
 data/evaluation_results.csv
-```
+The evaluation system compares multiple transcription outputs against a reference transcription.
+📈 Evaluation Metrics
+Metric	Purpose	Better Result
+BLEU	Measures similarity with reference text	Higher
+WER	Measures word-level transcription errors	Lower
+CER	Measures character-level transcription errors	Lower
+🔬 Example Model Comparison
+from src.speech_models import transcribe_standard_comparison
 
----
+results = transcribe_standard_comparison(
+    "audio.wav"
+)
+This executes Whisper, Faster-Whisper and Wav2Vec2.
+⚡ Example Fast Transcription
+from src.speech_models import transcribe_fast
 
-## 📈 Generate the Confusion Matrix
+results = transcribe_fast(
+    "audio.wav"
+)
+The fast mode uses Faster-Whisper.
+🧮 Example Evaluation
+from src.metrics import evaluate_transcription
 
-```powershell
-python -m src.plot_evaluation
-```
+result = evaluate_transcription(
+    reference_text,
+    generated_text
+)
 
-This generates:
+print(result)
+The result contains BLEU Score, WER and CER.
+📝 Example Content Extraction
+from src.content_extractor import extract_content
 
-```text
-data/confusion_matrix.png
-```
+content = extract_content(
+    transcription
+)
 
----
+print(content)
+The returned dictionary contains title, summary, key_points, action_items and keywords.
+🗃️ Example Database Initialization
+from src.database import initialize_database
 
-## 🔮 Future Enhancements
+initialize_database()
+This creates the required SQLite tables if they do not already exist.
+🧑‍🤝‍🧑 Organization Members
+from src.database import add_member
 
-- Automatic topic extraction
-- Multi-topic detection
-- Paragraph-level drift detection
-- User-defined classification thresholds
-- Larger evaluation datasets
-- Multilingual topic drift detection
-- Improved classification of partially relevant sentences
-- Additional semantic similarity visualizations
+add_member("Member Name")
+Members can be retrieved using:
+from src.database import get_members
 
----
+members = get_members()
+📢 Publishing Content
+Extracted content can be stored as published organizational content. The database stores title, summary, key points, action items, keywords, original transcription, created time, publisher and status.
+🗑️ Deletion Confirmation
+Before permanent deletion, every organization member must confirm.
+from src.database import confirm_deletion
 
-## 👨‍💻 Project Summary
+confirm_deletion(
+    content_id,
+    member_name
+)
+The system checks whether all registered members have confirmed:
+from src.database import can_delete_content
 
-VoiceVault demonstrates how modern NLP techniques can be used for:
-
-- Semantic similarity
-- Sentence embeddings
-- Topic drift detection
-- Context-aware text filtering
-- Sentence relevance classification
-- Automatic text cleaning
-- Model evaluation
-
-Instead of relying only on keyword matching, VoiceVault focuses on understanding the **semantic meaning and context** of text.
-
-
+can_delete_content(
+    content_id
+)
+Only when the result is True should the content be deleted.
+🔒 Data Considerations
+VoiceVault currently uses a local SQLite database:
+data/VoiceVault.db
+The database contains published content, transcriptions and organization-member information.
+For production deployments, additional security controls should be considered:
+•	Authentication
+•	Authorization
+•	Encryption
+•	Secure database hosting
+•	Access logging
+•	Backup policies
+•	Data retention policies
+•	Secure secret management
+⚠️ Current Limitations
+Speech Recognition
+•	Wav2Vec2 currently uses an English-specific model.
+•	Recognition accuracy depends on audio quality.
+•	Background noise can affect transcription quality.
+•	Different models may produce different results for the same recording.
+Online Media
+•	Some media may be private or restricted.
+•	Authentication may be required for protected content.
+•	YouTube processing requires Deno in the current implementation.
+•	Online availability can change independently of VoiceVault.
+Content Extraction
+The current content extraction system uses rule-based processing. It does not currently use a large language model to generate summaries or semantic action-item extraction.
+Database
+The application currently uses a local SQLite database rather than a centralized production database.
+🔮 Future Enhancements
+•	LLM-powered summarization
+•	Automatic topic extraction
+•	Topic classification
+•	Topic drift detection
+•	Speaker diarization
+•	Speaker identification
+•	Timestamped transcripts
+•	Word-level timestamps
+•	Multilingual transcription improvements
+•	Larger speech evaluation datasets
+•	Additional ASR models
+•	GPU acceleration
+•	Cloud storage
+•	Production database integration
+•	User authentication
+•	Role-based access control
+•	Audit logging
+•	Advanced search
+•	Semantic search
+•	Vector database integration
+•	Voice analytics dashboards
+•	Emotion and sentiment analysis
+•	Automatic meeting minutes
+•	Calendar/task integration
+•	API support
+•	REST API deployment
+•	Docker deployment
+•	Cloud deployment
+🧩 Design Philosophy
+VoiceVault is designed as a modular system.
+Audio Processing
+        │
+        ▼
+Media Processing
+        │
+        ▼
+Speech Recognition
+        │
+        ▼
+Evaluation
+        │
+        ▼
+Content Extraction
+        │
+        ▼
+Database Management
+•	Test individual components
+•	Replace speech models
+•	Add new evaluation metrics
+•	Add additional media sources
+•	Extend database functionality
+•	Introduce new AI capabilities
+📁 Git Repository
+https://github.com/manojjairam/VoiceVault.git
+Clone using:
+git clone https://github.com/manojjairam/VoiceVault.git
+🧑‍💻 Development
+Check repository status
+git status
+Add changes
+git add .
+Commit changes
+git commit -m "Update VoiceVault"
+Push changes
+git push origin main
+📜 License
+Add the project's preferred open-source license here if the repository is intended for public distribution.
+👨‍💻 Author
+Manoj Jairam
+VoiceVault is developed as an AI/NLP project combining speech recognition, transcription evaluation, media processing, content extraction and organizational content management.
+⭐ Project Summary
+VoiceVault brings together speech recognition, media processing, transcription evaluation and content management into one platform.
+INPUT
+  │
+  ├── Audio
+  ├── Video
+  └── Online Media
+        │
+        ▼
+MEDIA PROCESSING
+        │
+        ▼
+AUDIO EXTRACTION
+        │
+        ▼
+SPEECH RECOGNITION
+        │
+        ├── Whisper
+        ├── Faster-Whisper
+        └── Wav2Vec2
+        │
+        ▼
+TRANSCRIPTION
+        │
+        ▼
+QUALITY EVALUATION
+        │
+        ├── BLEU
+        ├── WER
+        └── CER
+        │
+        ▼
+CONTENT EXTRACTION
+        │
+        ├── Title
+        ├── Summary
+        ├── Key Points
+        ├── Action Items
+        └── Keywords
+        │
+        ▼
+CONTENT MANAGEMENT
+        │
+        ├── Publish
+        ├── Organization Members
+        ├── Deletion Confirmation
+        └── SQLite Storage
+        │
+        ▼
+VOICEVAULT
+VoiceVault demonstrates how modern speech-recognition and AI technologies can be combined with traditional software engineering and data-management techniques to create a complete voice-intelligence application.
