@@ -37,7 +37,6 @@ st.set_page_config(
 # ============================================================
 
 LANGUAGE_NAMES = {
-
     "en": "English",
     "hi": "Hindi",
     "ta": "Tamil",
@@ -61,9 +60,8 @@ LANGUAGE_NAMES = {
     "ar": "Arabic",
 }
 
- 
-def get_language_name(code):
 
+def get_language_name(code):
     if not code:
         return "Unknown"
 
@@ -80,7 +78,6 @@ def get_language_name(code):
 # ============================================================
 
 DEFAULTS = {
-
     "audio_path": None,
     "audio_name": "",
     "source_url": "",
@@ -96,17 +93,25 @@ DEFAULTS = {
     "comparison_results": None,
 
     "domain": None,
+    "domain_score": 0,
 
     "reference_text": "",
 
     "media_loaded": False,
+
+    # IMPORTANT:
+    # Comparison is now explicitly controlled.
+    # It will NOT appear until the button is clicked.
+    "comparison_run": False,
+
+    # Keeps the evaluation button enabled after
+    # the reference text is entered.
+    "reference_ready": False,
 }
 
 
 for key, value in DEFAULTS.items():
-
     if key not in st.session_state:
-
         st.session_state[key] = value
 
 
@@ -117,8 +122,7 @@ for key, value in DEFAULTS.items():
 def format_duration(seconds):
 
     try:
-
-        seconds = int(seconds)
+        seconds = int(float(seconds))
 
         hours = seconds // 3600
 
@@ -129,7 +133,6 @@ def format_duration(seconds):
         seconds = seconds % 60
 
         if hours:
-
             return (
                 f"{hours:02d}:"
                 f"{minutes:02d}:"
@@ -142,7 +145,6 @@ def format_duration(seconds):
         )
 
     except Exception:
-
         return "Unknown"
 
 
@@ -199,14 +201,12 @@ def is_video_file(file_path):
                     break
 
         else:
-
             return False
 
     if not isinstance(
         file_path,
         (str, os.PathLike)
     ):
-
         return False
 
     extension = Path(
@@ -214,7 +214,6 @@ def is_video_file(file_path):
     ).suffix.lower()
 
     video_extensions = {
-
         ".mp4",
         ".mkv",
         ".webm",
@@ -227,7 +226,6 @@ def is_video_file(file_path):
     }
 
     if extension in video_extensions:
-
         return True
 
     try:
@@ -269,7 +267,6 @@ def get_downloaded_path(result):
     if isinstance(result, str):
 
         if os.path.exists(result):
-
             return result
 
         return None
@@ -277,7 +274,6 @@ def get_downloaded_path(result):
     if isinstance(result, Path):
 
         if result.exists():
-
             return str(result)
 
         return None
@@ -285,7 +281,6 @@ def get_downloaded_path(result):
     if isinstance(result, dict):
 
         keys = [
-
             "path",
             "file_path",
             "filepath",
@@ -308,7 +303,6 @@ def get_downloaded_path(result):
                 value = str(value)
 
                 if os.path.exists(value):
-
                     return value
 
         for value in result.values():
@@ -320,7 +314,6 @@ def get_downloaded_path(result):
                 )
 
                 if nested:
-
                     return nested
 
             elif isinstance(
@@ -331,7 +324,6 @@ def get_downloaded_path(result):
                 value = str(value)
 
                 if os.path.exists(value):
-
                     return value
 
     return None
@@ -388,7 +380,6 @@ def prepare_media(download_result):
 DOMAIN_KEYWORDS = {
 
     "Science & Technology": [
-
         "science",
         "technology",
         "artificial intelligence",
@@ -403,10 +394,14 @@ DOMAIN_KEYWORDS = {
         "robot",
         "data",
         "algorithm",
+        "programming",
+        "python",
+        "cloud",
+        "database",
+        "engineering",
     ],
 
     "Education": [
-
         "lecture",
         "lesson",
         "education",
@@ -418,10 +413,12 @@ DOMAIN_KEYWORDS = {
         "course",
         "tutorial",
         "exam",
+        "assignment",
+        "school",
+        "learning",
     ],
 
     "Business & Finance": [
-
         "business",
         "company",
         "market",
@@ -433,10 +430,13 @@ DOMAIN_KEYWORDS = {
         "economy",
         "bank",
         "entrepreneur",
+        "sales",
+        "customer",
+        "management",
+        "financial",
     ],
 
     "Politics & Government": [
-
         "government",
         "politics",
         "political",
@@ -445,11 +445,12 @@ DOMAIN_KEYWORDS = {
         "president",
         "parliament",
         "policy",
+        "democracy",
         "government",
+        "campaign",
     ],
 
     "Health & Medicine": [
-
         "health",
         "medicine",
         "doctor",
@@ -459,10 +460,11 @@ DOMAIN_KEYWORDS = {
         "patient",
         "treatment",
         "healthcare",
+        "symptom",
+        "diagnosis",
     ],
 
     "Entertainment": [
-
         "movie",
         "film",
         "actor",
@@ -472,10 +474,12 @@ DOMAIN_KEYWORDS = {
         "celebrity",
         "cinema",
         "entertainment",
+        "series",
+        "television",
+        "netflix",
     ],
 
     "Sports": [
-
         "football",
         "cricket",
         "tennis",
@@ -486,10 +490,14 @@ DOMAIN_KEYWORDS = {
         "goal",
         "score",
         "tournament",
+        "championship",
+        "league",
+        "coach",
+        "batting",
+        "bowling",
     ],
 
     "News": [
-
         "news",
         "breaking",
         "report",
@@ -498,6 +506,9 @@ DOMAIN_KEYWORDS = {
         "latest",
         "incident",
         "according to",
+        "announcement",
+        "press",
+        "statement",
     ],
 }
 
@@ -511,7 +522,7 @@ def detect_domain(text):
             "score": 0
         }
 
-    text_lower = text.lower()
+    text_lower = str(text).lower()
 
     scores = {}
 
@@ -521,8 +532,12 @@ def detect_domain(text):
 
         for keyword in keywords:
 
-            if keyword in text_lower:
-
+            if re.search(
+                r"\b"
+                + re.escape(keyword)
+                + r"\b",
+                text_lower
+            ):
                 score += 1
 
         scores[domain] = score
@@ -545,6 +560,107 @@ def detect_domain(text):
         "domain": best_domain,
         "score": best_score
     }
+
+
+# ============================================================
+# CONSISTENT DOMAIN
+# ============================================================
+#
+# IMPORTANT FIX:
+#
+# Previously domain was calculated separately for every model.
+# Therefore Whisper could say Entertainment while another
+# model said Sports.
+#
+# Now VoiceVault chooses ONE primary transcript:
+#
+# 1. Fast transcription if available
+# 2. Otherwise the longest successful comparison transcript
+#
+# The domain is calculated ONCE from that primary transcript.
+#
+# Therefore every model will use the same domain.
+# ============================================================
+
+def update_global_domain():
+
+    primary_text = ""
+
+    # Prefer the fast transcription result if it exists.
+    if st.session_state.results:
+
+        fast_candidates = []
+
+        for result in st.session_state.results:
+
+            if not result.get(
+                "success",
+                False
+            ):
+                continue
+
+            model_name = str(
+                result.get(
+                    "model",
+                    ""
+                )
+            ).lower()
+
+            if (
+                "faster-whisper" in model_name
+                or "fast" in model_name
+            ):
+
+                fast_candidates.append(
+                    result
+                )
+
+        if fast_candidates:
+
+            primary_text = max(
+                fast_candidates,
+                key=lambda x: len(
+                    x.get("text", "")
+                )
+            ).get(
+                "text",
+                ""
+            )
+
+    # Otherwise use the longest successful transcript.
+    if not primary_text:
+
+        successful = [
+            r
+            for r in st.session_state.results
+            if r.get("success", False)
+        ]
+
+        if successful:
+
+            primary_text = max(
+                successful,
+                key=lambda x: len(
+                    x.get("text", "")
+                )
+            ).get(
+                "text",
+                ""
+            )
+
+    domain_result = detect_domain(
+        primary_text
+    )
+
+    st.session_state.domain = (
+        domain_result["domain"]
+    )
+
+    st.session_state.domain_score = (
+        domain_result["score"]
+    )
+
+    return domain_result
 
 
 # ============================================================
@@ -586,11 +702,8 @@ def levenshtein_distance(
 
             current.append(
                 min(
-
                     current[j - 1] + 1,
-
                     previous[j] + 1,
-
                     previous[j - 1] + cost,
                 )
             )
@@ -600,27 +713,76 @@ def levenshtein_distance(
     return previous[-1]
 
 
+def normalize_text(text):
+
+    text = str(text).lower()
+
+    text = re.sub(
+        r"[^\w\s]",
+        " ",
+        text
+    )
+
+    text = re.sub(
+        r"\s+",
+        " ",
+        text
+    )
+
+    return text.strip()
+
+
 def calculate_wer(
     reference,
     hypothesis
 ):
 
-    reference_words = (
-        reference.lower().split()
-    )
+    reference_words = normalize_text(
+        reference
+    ).split()
 
-    hypothesis_words = (
-        hypothesis.lower().split()
-    )
+    hypothesis_words = normalize_text(
+        hypothesis
+    ).split()
 
     if not reference_words:
-
         return 0
 
-    distance = levenshtein_distance(
-        " ".join(reference_words),
-        " ".join(hypothesis_words)
-    )
+    # Word-level Levenshtein distance.
+    rows = len(reference_words) + 1
+    cols = len(hypothesis_words) + 1
+
+    previous = list(range(cols))
+
+    for i in range(1, rows):
+
+        current = [i]
+
+        for j in range(1, cols):
+
+            if (
+                reference_words[i - 1]
+                ==
+                hypothesis_words[j - 1]
+            ):
+
+                cost = 0
+
+            else:
+
+                cost = 1
+
+            current.append(
+                min(
+                    current[j - 1] + 1,
+                    previous[j] + 1,
+                    previous[j - 1] + cost,
+                )
+            )
+
+        previous = current
+
+    distance = previous[-1]
 
     return round(
         distance
@@ -639,8 +801,15 @@ def calculate_cer(
     hypothesis
 ):
 
-    if not reference:
+    reference = normalize_text(
+        reference
+    )
 
+    hypothesis = normalize_text(
+        hypothesis
+    )
+
+    if not reference:
         return 0
 
     distance = levenshtein_distance(
@@ -665,8 +834,18 @@ def calculate_bleu(
     hypothesis
 ):
 
-    if not reference.strip():
+    reference = normalize_text(
+        reference
+    )
 
+    hypothesis = normalize_text(
+        hypothesis
+    )
+
+    if not reference:
+        return 0
+
+    if not hypothesis:
         return 0
 
     return round(
@@ -691,10 +870,6 @@ def calculate_word_accuracy(
     )
 
 
-# ============================================================
-# EVALUATION
-# ============================================================
-
 def evaluate_result(
     reference,
     hypothesis
@@ -716,8 +891,8 @@ def evaluate_result(
     )
 
     edit_distance = levenshtein_distance(
-        reference,
-        hypothesis
+        normalize_text(reference),
+        normalize_text(hypothesis)
     )
 
     return {
@@ -751,7 +926,6 @@ st.write(
     "A multi-model speech transcription and "
     "performance evaluation system."
 )
-
 
 st.caption(
     "VoiceVault separates fast transcription from "
@@ -887,11 +1061,20 @@ if source == "🌐 Online Media URL":
                         )
                     )
 
+                    # RESET ALL PROCESSING STATE
                     st.session_state.results = []
 
                     st.session_state.comparison_results = None
 
                     st.session_state.domain = None
+
+                    st.session_state.domain_score = 0
+
+                    st.session_state.reference_text = ""
+
+                    st.session_state.comparison_run = False
+
+                    st.session_state.reference_ready = False
 
                     st.session_state.media_loaded = True
 
@@ -1025,11 +1208,20 @@ else:
                     duration
                 )
 
+                # RESET PROCESSING STATE
                 st.session_state.results = []
 
                 st.session_state.comparison_results = None
 
                 st.session_state.domain = None
+
+                st.session_state.domain_score = 0
+
+                st.session_state.reference_text = ""
+
+                st.session_state.comparison_run = False
+
+                st.session_state.reference_ready = False
 
                 st.session_state.media_loaded = True
 
@@ -1043,7 +1235,7 @@ else:
 
 
 # ============================================================
-# MEDIA DETAILS
+# SOURCE INFORMATION
 # ============================================================
 
 if (
@@ -1080,8 +1272,12 @@ if (
         st.metric(
             "Audio",
             "Available"
-            if st.session_state.source_has_audio
-            or st.session_state.source_type == "audio"
+            if (
+                st.session_state.source_has_audio
+                or
+                st.session_state.source_type
+                == "audio"
+            )
             else "No"
         )
 
@@ -1090,8 +1286,12 @@ if (
         st.metric(
             "Video",
             "Available"
-            if st.session_state.source_has_video
-            or st.session_state.source_type == "video"
+            if (
+                st.session_state.source_has_video
+                or
+                st.session_state.source_type
+                == "video"
+            )
             else "No"
         )
 
@@ -1110,6 +1310,32 @@ if (
         st.write(
             f"**Source URL:** "
             f"{st.session_state.source_url}"
+        )
+
+    # --------------------------------------------------------
+    # DOMAIN NOW APPEARS INSIDE SOURCE INFORMATION
+    # --------------------------------------------------------
+
+    if st.session_state.domain:
+
+        st.write(
+            f"**Detected Domain:** "
+            f"🏷️ **{st.session_state.domain}**"
+        )
+
+        if st.session_state.domain_score:
+
+            st.caption(
+                f"Domain confidence indicator: "
+                f"{st.session_state.domain_score} "
+                f"keyword matches"
+            )
+
+    else:
+
+        st.write(
+            "**Detected Domain:** "
+            "Will be identified after transcription"
         )
 
     duration, sample_rate = (
@@ -1149,20 +1375,20 @@ if (
     )
 
     st.write(
-        "Start with Faster-Whisper Tiny for rapid "
-        "transcription. The result is cached so "
-        "re-running the page does not automatically "
-        "transcribe the same media again."
+        "Use Faster-Whisper for a quick transcript. "
+        "This is the recommended option when you want "
+        "a result quickly."
     )
 
     if st.button(
         "⚡ Fast Transcribe",
         type="primary",
-        use_container_width=True
+        use_container_width=True,
+        key="fast_transcribe_button"
     ):
 
         with st.spinner(
-            "Transcribing with Faster-Whisper Tiny..."
+            "Transcribing with Faster-Whisper..."
         ):
 
             results = transcribe_fast(
@@ -1171,16 +1397,28 @@ if (
 
         st.session_state.results = results
 
+        # A fast transcription is NOT a comparison.
+        st.session_state.comparison_run = False
+
+        # Clear old evaluation.
+        st.session_state.comparison_results = None
+
+        # Determine ONE domain.
+        update_global_domain()
+
         st.success(
             "✅ Fast transcription completed."
         )
 
 
 # ============================================================
-# DISPLAY RESULTS
+# FAST TRANSCRIPTION DISPLAY
 # ============================================================
 
-if st.session_state.results:
+if (
+    st.session_state.results
+    and not st.session_state.comparison_run
+):
 
     st.divider()
 
@@ -1205,7 +1443,10 @@ if st.session_state.results:
             continue
 
         st.subheader(
-            result["model"]
+            result.get(
+                "model",
+                "Speech Recognition Model"
+            )
         )
 
         col1, col2, col3 = st.columns(3)
@@ -1247,29 +1488,15 @@ if st.session_state.results:
             ),
             height=250,
             key=(
-                "transcript_"
-                + result["model"]
+                "fast_transcript_"
+                + str(
+                    result.get(
+                        "model",
+                        "model"
+                    )
+                )
             )
         )
-
-        domain_result = detect_domain(
-            result.get(
-                "text",
-                ""
-            )
-        )
-
-        st.info(
-            f"🏷️ Detected Domain: "
-            f"**{domain_result['domain']}**"
-        )
-
-        if domain_result["score"]:
-
-            st.caption(
-                f"Domain confidence indicator: "
-                f"{domain_result['score']} keyword matches"
-            )
 
 
 # ============================================================
@@ -1288,9 +1515,9 @@ if (
     )
 
     st.write(
-        "This stage is separate from fast transcription. "
-        "Run it only when you want to perform the "
-        "comparative experiment."
+        "This stage runs multiple ASR models on the "
+        "same audio so their transcription quality "
+        "and processing speed can be compared."
     )
 
     comparison_type = st.radio(
@@ -1299,13 +1526,32 @@ if (
             "Standard – 3 ASR Models",
             "Extended – 4 ASR Models"
         ],
-        horizontal=True
+        horizontal=True,
+        key="comparison_level"
     )
 
-    if st.button(
+    st.info(
+        "💡 For the fastest experiment, use "
+        "**Standard – 3 ASR Models**."
+    )
+
+    # --------------------------------------------------------
+    # IMPORTANT:
+    # There is NO automatic comparison result rendering here.
+    #
+    # Results appear ONLY after this button is clicked.
+    # --------------------------------------------------------
+
+    run_comparison = st.button(
         "🔬 Run Model Comparison",
-        use_container_width=True
-    ):
+        use_container_width=True,
+        key="run_model_comparison"
+    )
+
+    if run_comparison:
+
+        # Clear previous evaluation results.
+        st.session_state.comparison_results = None
 
         if comparison_type.startswith(
             "Standard"
@@ -1335,8 +1581,177 @@ if (
 
         st.session_state.results = comparison
 
+        # This flag controls whether comparison results
+        # should be displayed.
+        st.session_state.comparison_run = True
+
+        # Calculate domain ONCE from all comparison output.
+        update_global_domain()
+
         st.success(
             "✅ Model comparison transcription completed."
+        )
+
+
+# ============================================================
+# MODEL COMPARISON RESULTS
+# ============================================================
+
+if (
+    st.session_state.comparison_run
+    and st.session_state.results
+):
+
+    st.divider()
+
+    st.header(
+        "🔬 Model Comparison Results"
+    )
+
+    comparison_rows = []
+
+    for result in st.session_state.results:
+
+        if not result.get(
+            "success",
+            False
+        ):
+            continue
+
+        comparison_rows.append({
+
+            "Model":
+                result.get(
+                    "model",
+                    "Unknown"
+                ),
+
+            "Language":
+                get_language_name(
+                    result.get(
+                        "language"
+                    )
+                ),
+
+            "Processing Time (sec)":
+                round(
+                    float(
+                        result.get(
+                            "processing_time",
+                            0
+                        )
+                    ),
+                    2
+                ),
+
+            "Transcript Length":
+                len(
+                    result.get(
+                        "text",
+                        ""
+                    )
+                ),
+
+            # IMPORTANT:
+            # SAME DOMAIN FOR EVERY MODEL
+            "Domain":
+                st.session_state.domain
+                or "General",
+        })
+
+    if comparison_rows:
+
+        comparison_df = pd.DataFrame(
+            comparison_rows
+        )
+
+        st.dataframe(
+            comparison_df,
+            use_container_width=True,
+            hide_index=True
+        )
+
+        st.caption(
+            "The domain is determined once from the "
+            "primary transcription and applied consistently "
+            "across all models."
+        )
+
+        # ----------------------------------------------------
+        # INDIVIDUAL TRANSCRIPTS
+        # ----------------------------------------------------
+
+        st.subheader(
+            "📝 Model Transcriptions"
+        )
+
+        for index, result in enumerate(
+            st.session_state.results
+        ):
+
+            if not result.get(
+                "success",
+                False
+            ):
+                continue
+
+            model_name = result.get(
+                "model",
+                f"Model {index + 1}"
+            )
+
+            with st.expander(
+                f"🎙️ {model_name}"
+            ):
+
+                col1, col2 = st.columns(2)
+
+                with col1:
+
+                    st.metric(
+                        "Language",
+                        get_language_name(
+                            result.get(
+                                "language"
+                            )
+                        )
+                    )
+
+                with col2:
+
+                    st.metric(
+                        "Processing Time",
+                        f"{result.get('processing_time', 0)} sec"
+                    )
+
+                st.write(
+                    f"**Domain:** "
+                    f"{st.session_state.domain or 'General'}"
+                )
+
+                st.text_area(
+                    "Transcript",
+                    result.get(
+                        "text",
+                        ""
+                    ),
+                    height=220,
+                    key=(
+                        "comparison_transcript_"
+                        + str(index)
+                        + "_"
+                        + re.sub(
+                            r"\W+",
+                            "_",
+                            str(model_name)
+                        )
+                    )
+                )
+
+    else:
+
+        st.warning(
+            "No successful model results were returned."
         )
 
 
@@ -1344,7 +1759,10 @@ if (
 # REFERENCE TEXT
 # ============================================================
 
-if st.session_state.results:
+if (
+    st.session_state.comparison_run
+    and st.session_state.results
+):
 
     st.divider()
 
@@ -1353,110 +1771,176 @@ if st.session_state.results:
     )
 
     st.write(
-        "A reference transcript is required for objective "
-        "accuracy metrics such as WER, CER and BLEU."
+        "Paste a manually verified reference transcript "
+        "to calculate objective transcription accuracy."
     )
 
     st.info(
-        "Don't have a reference transcript? You can still "
-        "use VoiceVault for transcription, model speed "
-        "comparison and qualitative analysis. Accuracy "
-        "metrics will simply be skipped."
+        "📌 Required for WER, CER, Word Accuracy and BLEU. "
+        "If no reference transcript is available, you can "
+        "still use the model speed and transcription comparison."
     )
+
+    # --------------------------------------------------------
+    # Use a KEY so Streamlit reliably stores the text.
+    # --------------------------------------------------------
 
     reference_text = st.text_area(
-        "Reference Transcript (Optional)",
+        "Reference Transcript",
         value=st.session_state.reference_text,
-        height=180,
+        height=220,
         placeholder=(
-            "Paste the manually verified transcript here "
-            "if you have one..."
-        )
+            "Paste the manually verified transcript here..."
+        ),
+        key="reference_transcript_input"
     )
 
+    # IMPORTANT:
+    # Store the value every rerun.
     st.session_state.reference_text = reference_text
 
+    st.session_state.reference_ready = bool(
+        reference_text.strip()
+    )
 
-# ============================================================
-# EVALUATION
-# ============================================================
+    # --------------------------------------------------------
+    # BUTTON IS ALWAYS RENDERED.
+    #
+    # It is enabled when reference text exists.
+    # This fixes the issue where the button disappeared.
+    # --------------------------------------------------------
 
-if (
-    st.session_state.results
-    and st.session_state.reference_text.strip()
-):
-
-    if st.button(
+    evaluate_button = st.button(
         "📊 Evaluate Accuracy",
         type="primary",
-        use_container_width=True
-    ):
+        use_container_width=True,
+        key="evaluate_accuracy_button",
+        disabled=not st.session_state.reference_ready
+    )
 
-        evaluation_rows = []
+    if not st.session_state.reference_ready:
 
-        for result in st.session_state.results:
+        st.caption(
+            "⬆️ Paste the reference transcript above "
+            "to enable the Evaluate Accuracy button."
+        )
 
-            if not result.get(
-                "success",
-                False
-            ):
+    # --------------------------------------------------------
+    # RUN EVALUATION
+    # --------------------------------------------------------
 
-                continue
+    if evaluate_button:
 
-            metrics = evaluate_result(
-                st.session_state.reference_text,
-                result.get(
+        reference = (
+            st.session_state.reference_text.strip()
+        )
+
+        if not reference:
+
+            st.warning(
+                "Please paste a reference transcript first."
+            )
+
+        else:
+
+            evaluation_rows = []
+
+            for result in st.session_state.results:
+
+                if not result.get(
+                    "success",
+                    False
+                ):
+                    continue
+
+                hypothesis = result.get(
                     "text",
                     ""
                 )
-            )
 
-            evaluation_rows.append({
+                if not hypothesis.strip():
+                    continue
 
-                "Model":
-                    result["model"],
+                metrics = evaluate_result(
+                    reference,
+                    hypothesis
+                )
 
-                "Language":
-                    get_language_name(
+                evaluation_rows.append({
+
+                    "Model":
                         result.get(
-                            "language"
-                        )
-                    ),
+                            "model",
+                            "Unknown"
+                        ),
 
-                "WER (%)":
-                    metrics["WER (%)"],
+                    "Language":
+                        get_language_name(
+                            result.get(
+                                "language"
+                            )
+                        ),
 
-                "CER (%)":
-                    metrics["CER (%)"],
+                    "WER (%)":
+                        metrics[
+                            "WER (%)"
+                        ],
 
-                "Word Accuracy (%)":
-                    metrics[
-                        "Word Accuracy (%)"
-                    ],
+                    "CER (%)":
+                        metrics[
+                            "CER (%)"
+                        ],
 
-                "BLEU":
-                    metrics["BLEU"],
+                    "Word Accuracy (%)":
+                        metrics[
+                            "Word Accuracy (%)"
+                        ],
 
-                "Edit Distance":
-                    metrics[
-                        "Edit Distance"
-                    ],
+                    "BLEU":
+                        metrics[
+                            "BLEU"
+                        ],
 
-                "Processing Time (sec)":
-                    result[
-                        "processing_time"
-                    ],
-            })
+                    "Edit Distance":
+                        metrics[
+                            "Edit Distance"
+                        ],
 
-        if evaluation_rows:
+                    "Processing Time (sec)":
+                        round(
+                            float(
+                                result.get(
+                                    "processing_time",
+                                    0
+                                )
+                            ),
+                            2
+                        ),
 
-            evaluation_df = pd.DataFrame(
-                evaluation_rows
-            )
+                    # SAME DOMAIN
+                    "Domain":
+                        st.session_state.domain
+                        or "General",
+                })
 
-            st.session_state.comparison_results = (
-                evaluation_df
-            )
+            if evaluation_rows:
+
+                st.session_state.comparison_results = (
+                    pd.DataFrame(
+                        evaluation_rows
+                    )
+                )
+
+                st.success(
+                    "✅ Accuracy evaluation completed."
+                )
+
+            else:
+
+                st.warning(
+                    "No successful model transcripts "
+                    "were available for evaluation."
+                )
 
 
 # ============================================================
@@ -1478,18 +1962,29 @@ if (
         st.session_state.comparison_results
     )
 
+    # --------------------------------------------------------
+    # FULL RESULTS
+    # --------------------------------------------------------
+
+    st.subheader(
+        "Complete Evaluation Results"
+    )
+
     st.dataframe(
         df,
         use_container_width=True,
         hide_index=True
     )
 
+    # --------------------------------------------------------
+    # ACCURACY COMPARISON
+    # --------------------------------------------------------
+
     st.subheader(
-        "Accuracy Comparison"
+        "🎯 Accuracy Comparison"
     )
 
     accuracy_columns = [
-
         "Model",
         "WER (%)",
         "CER (%)",
@@ -1497,85 +1992,124 @@ if (
         "BLEU",
     ]
 
+    available_accuracy_columns = [
+        column
+        for column in accuracy_columns
+        if column in df.columns
+    ]
+
     st.dataframe(
-        df[accuracy_columns],
+        df[
+            available_accuracy_columns
+        ],
         use_container_width=True,
         hide_index=True
     )
 
+    # --------------------------------------------------------
+    # PROCESSING SPEED
+    # --------------------------------------------------------
+
     st.subheader(
-        "Processing Speed"
+        "⚡ Processing Speed"
     )
 
-    speed_df = df[
-        [
-            "Model",
-            "Processing Time (sec)"
-        ]
-    ].set_index(
-        "Model"
-    )
+    if (
+        "Processing Time (sec)"
+        in df.columns
+    ):
 
-    st.bar_chart(
-        speed_df
-    )
+        speed_df = df[
+            [
+                "Model",
+                "Processing Time (sec)"
+            ]
+        ].set_index(
+            "Model"
+        )
+
+        st.bar_chart(
+            speed_df
+        )
 
     # --------------------------------------------------------
     # BEST MODELS
     # --------------------------------------------------------
 
-    fastest = df.loc[
-        df[
-            "Processing Time (sec)"
-        ].idxmin()
-    ]
+    if len(df) > 0:
 
-    best_wer = df.loc[
-        df[
-            "WER (%)"
-        ].idxmin()
-    ]
+        fastest = df.loc[
+            df[
+                "Processing Time (sec)"
+            ].idxmin()
+        ]
 
-    best_cer = df.loc[
-        df[
-            "CER (%)"
-        ].idxmin()
-    ]
+        best_wer = df.loc[
+            df[
+                "WER (%)"
+            ].idxmin()
+        ]
 
-    best_bleu = df.loc[
-        df[
-            "BLEU"
-        ].idxmax()
-    ]
+        best_cer = df.loc[
+            df[
+                "CER (%)"
+            ].idxmin()
+        ]
 
-    st.subheader(
-        "🏆 Experimental Summary"
-    )
+        best_bleu = df.loc[
+            df[
+                "BLEU"
+            ].idxmax()
+        ]
 
-    col1, col2 = st.columns(2)
+        best_accuracy = df.loc[
+            df[
+                "Word Accuracy (%)"
+            ].idxmax()
+        ]
 
-    with col1:
-
-        st.success(
-            f"⚡ Fastest Model: "
-            f"**{fastest['Model']}**"
+        st.subheader(
+            "🏆 Experimental Summary"
         )
 
-        st.success(
-            f"🎯 Lowest WER: "
-            f"**{best_wer['Model']}**"
-        )
+        col1, col2 = st.columns(2)
 
-    with col2:
+        with col1:
 
-        st.success(
-            f"📝 Lowest CER: "
-            f"**{best_cer['Model']}**"
-        )
+            st.success(
+                f"⚡ Fastest Model: "
+                f"**{fastest['Model']}**"
+            )
 
-        st.success(
-            f"🏅 Highest BLEU: "
-            f"**{best_bleu['Model']}**"
+            st.success(
+                f"🎯 Lowest WER: "
+                f"**{best_wer['Model']}**"
+            )
+
+            st.success(
+                f"📝 Lowest CER: "
+                f"**{best_cer['Model']}**"
+            )
+
+        with col2:
+
+            st.success(
+                f"🏅 Highest BLEU: "
+                f"**{best_bleu['Model']}**"
+            )
+
+            st.success(
+                f"⭐ Highest Word Accuracy: "
+                f"**{best_accuracy['Model']}**"
+            )
+
+        # ----------------------------------------------------
+        # DOMAIN
+        # ----------------------------------------------------
+
+        st.info(
+            f"🏷️ **Detected Domain:** "
+            f"**{st.session_state.domain or 'General'}**"
         )
 
 
@@ -1584,7 +2118,8 @@ if (
 # ============================================================
 
 if (
-    st.session_state.results
+    st.session_state.comparison_run
+    and st.session_state.results
     and not st.session_state.reference_text.strip()
 ):
 
@@ -1595,8 +2130,8 @@ if (
     )
 
     st.write(
-        "Since no manually verified transcript was "
-        "provided, objective accuracy metrics cannot "
+        "Since no manually verified reference transcript "
+        "was provided, objective accuracy metrics cannot "
         "be calculated."
     )
 
@@ -1612,7 +2147,10 @@ if (
             speed_rows.append({
 
                 "Model":
-                    result["model"],
+                    result.get(
+                        "model",
+                        "Unknown"
+                    ),
 
                 "Language":
                     get_language_name(
@@ -1622,9 +2160,15 @@ if (
                     ),
 
                 "Processing Time (sec)":
-                    result[
-                        "processing_time"
-                    ],
+                    round(
+                        float(
+                            result.get(
+                                "processing_time",
+                                0
+                            )
+                        ),
+                        2
+                    ),
 
                 "Transcript Length":
                     len(
@@ -1634,13 +2178,10 @@ if (
                         )
                     ),
 
+                # SAME DOMAIN
                 "Domain":
-                    detect_domain(
-                        result.get(
-                            "text",
-                            ""
-                        )
-                    )["domain"],
+                    st.session_state.domain
+                    or "General",
             })
 
     if speed_rows:
@@ -1666,6 +2207,25 @@ if (
             f"**{fastest['Model']}** was fastest "
             f"for this sample."
         )
+
+
+# ============================================================
+# PERFORMANCE NOTE
+# ============================================================
+
+if st.session_state.comparison_run:
+
+    st.divider()
+
+    st.caption(
+        "⚡ Performance note: VoiceVault keeps the "
+        "comparison separate from fast transcription. "
+        "For the quickest demonstration, use Fast "
+        "Transcription first. The standard comparison "
+        "runs the configured Whisper, Faster-Whisper "
+        "and Wav2Vec2 models. Model loading is cached "
+        "by the speech-model module when supported."
+    )
 
 
 # ============================================================
